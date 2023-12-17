@@ -1,0 +1,159 @@
+// /upload file soal
+// const uploadDirectory = "./upload/";
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     // Define the destination folder for uploaded files
+//     cb(null, "./upload/");
+//   },
+//   filename: function (req, file, cb) {
+//     // Define the filename for uploaded files
+//     cb(
+//       null,
+//       file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+//     );
+//   },
+// });
+
+// const upload = multer({
+//   storage: storage,
+//   limits: { fileSize: 1000000 }, // Set a file size limit (in bytes)
+// }).single("file");
+
+// const uploadqstnFile = (req, res) => {
+//   upload(req, res, (err) => {
+//     if (err) {
+//       return res.status(500).json({ error: err.message });
+//     }
+
+//     if (!req.file) {
+//       return res.status(400).json({ error: "No file uploaded" });
+//     }
+
+//     // Use 'req.file.path' to get the path of the uploaded file
+//     // const path = require("path");
+//     const filePath = req.file.path;
+//     const absoluteFilePath = path.resolve(__dirname, filePath);
+//     fs.unlinkSync(absoluteFilePath);
+
+//     // Check file extension
+//     const fileExtension = path.extname(filePath);
+//     if (fileExtension !== ".docx") {
+//       return res
+//         .status(400)
+//         .json({ error: "Invalid file format. Please upload a .docx file." });
+//     }
+
+//     // Use mammoth to convert .docx to plain text
+//     mammoth
+//       .extractRawText({ path: filePath })
+//       .then((result) => {
+//         const plainText = result.value;
+//         console.log("plain text:", plainText);
+
+//         // const parsedData = parseContent(plainText);
+//         // console.log("Parsed Data:", parsedData);
+
+//         // saveToDatabase(parsedData);
+
+//         if (fs.existsSync(filePath)) {
+//           fs.unlink(filePath, (unlinkErr) => {
+//             if (unlinkErr) {
+//               console.error("Error deleting file:", unlinkErr);
+//             }
+//             // Do not send a response here
+//           });
+
+//           res
+//             .status(200)
+//             .json({ message: "File uploaded and parsed successfully" });
+//         } else {
+//           console.error("File does not exist:", filePath);
+//           res.status(404).json({ error: "File not found" });
+//         }
+//       })
+//       .catch((parseErr) => {
+//         fs.unlink(filePath, (unlinkErr) => {
+//           if (unlinkErr) {
+//             console.error("Error deleting file:", unlinkErr);
+//             // Do not send a response here
+//           }
+//         });
+
+//         console.error("Error parsing .docx file:", parseErr);
+//         res.status(500).json({ error: "Error parsing .docx file" });
+//       });
+//   });
+//   // Function to get the course ID based on the course name
+//   async function getCourseIdFromDatabase(courseName) {
+//     // Replace the following line with the actual database query
+//     const result = await connection.query(
+//       "SELECT course_id FROM courses WHERE nama_crs = ?",
+//       [courseName]
+//     );
+
+//     // Assuming the query returns a single result
+//     if (result && result.length > 0) {
+//       return result[0].course_id;
+//     } else {
+//       // Handle the case where the course name is not found
+//       throw new Error("Course not found");
+//     }
+//   }
+
+//   async function saveToDatabase(parsedData) {
+//     for (const item of parsedData) {
+//       // Assuming you have a function to get the course ID based on the course name
+//       const courseId = await getCourseIdFromDatabase(item.course);
+
+//       // Insert into questions table
+//       const questionData = {
+//         question: item.question,
+//         difficulty_lvl: item.difficulty_lvl,
+//         topic: item.topic,
+//         course_id: courseId,
+//       };
+
+//       // Insert questionData into questions table
+//       const insertQuestion = (questionData) => {
+//         return new Promise((resolve, reject) => {
+//           const query =
+//             "INSERT INTO `questions`(`id_quest`, `question`, `difficulty_lvl`, `topic`, `course_id`) VALUES (?, ?,?,?,?)";
+//           connection.query(query, questionData, (err, result) => {
+//             if (err) {
+//               reject(err);
+//             } else {
+//               resolve(result.insertId);
+//             }
+//           });
+//         });
+//       };
+//       const questionId = await connection.insertQuestion(questionData);
+
+//       // Insert into choices table
+//       for (const choice of item.choices) {
+//         // Assuming choices are in the format {choiceText; isCorrect}
+//         const [choiceText, isCorrect] = parseChoice(choice);
+//         const choiceData = {
+//           question_id: questionId,
+//           choice: choiceText,
+//           is_correct: isCorrect,
+//         };
+
+//         const insertChoice = (choiceData) => {
+//           return new Promise((resolve, reject) => {
+//             const query =
+//               "INSERT INTO `choices`(`question_id`, `choice`, `is_correct`) VALUES (?,?,?)";
+//             connection.query(query, choiceData, (err) => {
+//               if (err) {
+//                 reject(err);
+//               } else {
+//                 resolve();
+//               }
+//             });
+//           });
+//         };
+//         await connection.insertChoice(choiceData);
+//       }
+//     }
+//   }
+// };
